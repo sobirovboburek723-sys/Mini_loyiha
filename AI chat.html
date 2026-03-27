@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Kalkulyator</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f0f2f5;
+    text-align: center;
+}
+
+#calc {
+    width: 300px;
+    margin: 50px auto;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+button {
+    width: 60px;
+    height: 40px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+#result {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="calc">
+    <h2>Kalkulyator</h2>
+
+    <input type="text" id="expression" placeholder="Masalan: 5+3*2">
+
+    <br>
+
+    <button onclick="calculate()">=</button>
+    <button onclick="clearInput()">C</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+function calculate() {
+    let exp = document.getElementById("expression").value;
+
+    try {
+        // hisoblash
+        let result = eval(exp);
+
+        document.getElementById("result").innerText = "Natija: " + result;
+    } catch (e) {
+        document.getElementById("result").innerText = "Xato!";
+    }
+}
+
+function clearInput() {
+    document.getElementById("expression").value = "";
+    document.getElementById("result").innerText = "";
+}
+</script>
+
+</body>
+</html>
