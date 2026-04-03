@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Gapiruvchi Soat</title>
+    <style>
+        body {
+            background: radial-gradient(circle, #1e293b, #0f172a);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .clock-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        #time {
+            font-size: 100px;
+            font-weight: bold;
+            color: #00d2ff;
+            text-shadow: 0 0 20px #00d2ff;
+            margin-bottom: 20px;
+        }
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        button {
+            padding: 15px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #334155;
+            color: white;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #00d2ff;
+            color: #0f172a;
+            transform: translateY(-3px);
+        }
+        .lang-label {
+            margin-bottom: 10px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="clock-card">
+    <div id="time">00:00:00</div>
+    <div class="lang-label">Vaqtni eshitish uchun tilni tanlang:</div>
+    <div class="btn-group">
+        <button onclick="speakTime('uz-UZ')">🇺🇿 O'zbekcha</button>
+        <button onclick="speakTime('ru-RU')">🇷🇺 Русский</button>
+        <button onclick="speakTime('en-US')">🇺🇸 English</button>
+        <button onclick="speakTime('ko-KR')">🇰🇷 한국어</button>
+    </div>
+</div>
+
+<script>
+    // Soatni har soniyada yangilab turish
+    function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('time').innerText = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Gapirish funksiyasi
+    function speakTime(langCode) {
+        const now = new Date();
+        const h = now.getHours();
+        const m = now.getMinutes();
+        
+        let text = "";
+
+        // Tillarga qarab matnni shakllantirish
+        if (langCode === 'uz-UZ') {
+            text = `Hozir soat ${h} dan ${m} daqiqa o'tdi`;
+        } else if (langCode === 'ru-RU') {
+            text = `Сейчас время ${h} часов ${m} минут`;
+        } else if (langCode === 'en-US') {
+            text = `The time is ${h} ${m}`;
+        } else if (langCode === 'ko-KR') {
+            text = `지금은 ${h}시 ${m}분입니다`;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = langCode;
+        utterance.rate = 0.9; // Tezlik
+        window.speechSynthesis.speak(utterance);
+    }
+</script>
+
+</body>
+</html>

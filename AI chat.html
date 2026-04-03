@@ -1,79 +1,127 @@
+
+
+
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<title>Kalkulyator</title>
-
-<style>
-body {
-    font-family: Arial;
-    background: #f0f2f5;
-    text-align: center;
-}
-
-#calc {
-    width: 300px;
-    margin: 50px auto;
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-}
-
-input {
-    width: 90%;
-    padding: 10px;
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-button {
-    width: 60px;
-    height: 40px;
-    margin: 5px;
-    font-size: 16px;
-}
-
-#result {
-    margin-top: 10px;
-    font-size: 20px;
-    font-weight: bold;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mening AI Yordamchim</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #180e45;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            width: 400px;
+            height: 600px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        .ai-message {
+            background-color: #e8f1f8;
+            align-self: flex-start;
+            color: #333;
+        }
+        .user-message {
+            background-color: #3498db;
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .input-area {
+            display: flex;
+            padding: 15px;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #219150;
+        }
+    </style>
 </head>
-
 <body>
 
-<div id="calc">
-    <h2>Kalkulyator</h2>
-
-    <input type="text" id="expression" placeholder="Masalan: 5+3*2">
-
-    <br>
-
-    <button onclick="calculate()">=</button>
-    <button onclick="clearInput()">C</button>
-
-    <div id="result"></div>
+<div class="chat-container">
+    <div class="chat-header">Boburbekning AI-yi</div>
+    <div class="chat-box" id="chatBox">
+        <div class="message ai-message">Salom! Men o'zbek, rus va matematika tillarini tushunaman. Savolingizni bering.</div>
+    </div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Savol yozing...">
+        <button onclick="sendMessage()">Yuborish</button>
+    </div>
 </div>
 
 <script>
-function calculate() {
-    let exp = document.getElementById("expression").value;
+    function sendMessage() {
+        const input = document.getElementById('userInput');
+        const chatBox = document.getElementById('chatBox');
+        
+        if (input.value.trim() !== "") {
+            // Foydalanuvchi xabari
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.textContent = input.value;
+            chatBox.appendChild(userDiv);
 
-    try {
-        // hisoblash
-        let result = eval(exp);
+            // Sun'iy javob simulatsiyasi
+            setTimeout(() => {
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'message ai-message';
+                aiDiv.innerHTML = "Hozircha men faqat interfeysman. Haqiqiy AI bo'lishim uchun orqa fonda (Backend) model ulanishi kerak.";
+                chatBox.appendChild(aiDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 1000);
 
-        document.getElementById("result").innerText = "Natija: " + result;
-    } catch (e) {
-        document.getElementById("result").innerText = "Xato!";
+            input.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
     }
-}
-
-function clearInput() {
-    document.getElementById("expression").value = "";
-    document.getElementById("result").innerText = "";
-}
 </script>
 
 </body>
