@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Poyga O'yini</title>
+    <style>
+        body { margin: 0; background: #222; font-family: 'Arial', sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #gameContainer { position: relative; width: 400px; height: 600px; background: #333; border: 4px solid #555; overflow: hidden; }
+        .roadLine { position: absolute; width: 10px; height: 100px; background: white; left: 195px; }
+        .car { position: absolute; width: 50px; height: 80px; background: #e74c3c; border-radius: 5px; bottom: 20px; left: 175px; transition: 0.1s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .car::before { content: ''; position: absolute; width: 40px; height: 15px; background: #3498db; top: 10px; left: 5px; } /* Oyna */
+        .enemy { position: absolute; width: 50px; height: 80px; background: #f1c40f; border-radius: 5px; top: -100px; }
+        #score { position: absolute; top: 10px; left: 10px; color: white; font-size: 20px; z-index: 10; }
+        #gameOver { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px; text-align: center; display: none; z-index: 20; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="gameContainer">
+        <div id="score">Ball: 0</div>
+        <div id="car" class="car"></div>
+        <div id="gameOver">
+            <h1>O'yin tugadi!</h1>
+            <p id="finalScore"></p>
+            <button onclick="location.reload()" style="padding: 10px 20px; cursor: pointer;">Qayta boshlash</button>
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('gameContainer');
+        const car = document.getElementById('car');
+        const scoreElement = document.getElementById('score');
+        const gameOverDiv = document.getElementById('gameOver');
+        const finalScoreText = document.getElementById('finalScore');
+
+        let carPos = { x: 175, y: 500 };
+        let score = 0;
+        let gameActive = true;
+        let enemySpeed = 5;
+        let roadLines = [];
+
+        // Yo'l chiziqlarini yaratish
+        for(let i=0; i<5; i++) {
+            let line = document.createElement('div');
+            line.classList.add('roadLine');
+            line.style.top = (i * 150) + 'px';
+            container.appendChild(line);
+            roadLines.push(line);
+        }
+
+        // Dushman mashinani yaratish
+        let enemy = document.createElement('div');
+        enemy.classList.add('enemy');
+        container.appendChild(enemy);
+        let enemyPos = { x: Math.random() * 350, y: -100 };
+
+        // Boshqaruv
+        document.addEventListener('keydown', (e) => {
+            if(!gameActive) return;
+            if(e.key === 'ArrowLeft' && carPos.x > 0) carPos.x -= 20;
+            if(e.key === 'ArrowRight' && carPos.x < 350) carPos.x += 20;
+            car.style.left = carPos.x + 'px';
+        });
+
+        function update() {
+            if(!gameActive) return;
+
+            // Yo'l chiziqlari harakati
+            roadLines.forEach(line => {
+                let top = parseInt(line.style.top);
+                if(top > 600) top = -100;
+                line.style.top = (top + enemySpeed) + 'px';
+            });
+
+            // Dushman harakati
+            enemyPos.y += enemySpeed;
+            if(enemyPos.y > 600) {
+                enemyPos.y = -100;
+                enemyPos.x = Math.random() * 350;
+                score++;
+                scoreElement.innerText = "Ball: " + score;
+                if(score % 5 === 0) enemySpeed += 0.5; // Tezlikni oshirish
+            }
+            enemy.style.top = enemyPos.y + 'px';
+            enemy.style.left = enemyPos.x + 'px';
+
+            // To'qnashuvni tekshirish
+            if (
+                carPos.x < enemyPos.x + 50 &&
+                carPos.x + 50 > enemyPos.x &&
+                carPos.y < enemyPos.y + 80 &&
+                carPos.y + 80 > enemyPos.y
+            ) {
+                endGame();
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        function endGame() {
+            gameActive = false;
+            gameOverDiv.style.display = 'block';
+            finalScoreText.innerText = "Sizning natijangiz: " + score;
+        }
+
+        update();
+    </script>
+</body>
+</html>

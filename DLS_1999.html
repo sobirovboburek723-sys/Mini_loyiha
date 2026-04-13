@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>2-Player Real Futbol</title>
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #222; font-family: sans-serif; overflow: hidden; }
+        canvas { border: 5px solid #fff; background: #4CAF50; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .ui { position: absolute; top: 20px; color: white; font-size: 30px; font-weight: bold; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div class="ui">PLAYER 1: <span id="s1">0</span> | PLAYER 2: <span id="s2">0</span></div>
+<canvas id="gameCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = 1000;
+canvas.height = 600;
+
+// O'yin obyektlari
+const ball = { x: 500, y: 300, r: 12, dx: 0, dy: 0, friction: 0.98 };
+const p1 = { x: 100, y: 300, r: 25, color: "blue", speed: 5, score: 0 };
+const p2 = { x: 900, y: 300, r: 25, color: "red", speed: 5, score: 0 };
+
+const keys = {};
+window.addEventListener("keydown", (e) => keys[e.code] = true);
+window.addEventListener("keyup", (e) => keys[e.code] = false);
+
+function drawField() {
+    // Maydon chiziqlari
+    ctx.strokeStyle = "rgba(255,255,255,0.5)";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(500, 0); ctx.lineTo(500, 600); // Markaziy chiziq
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(500, 300, 80, 0, Math.PI * 2); // Markaziy aylana
+    ctx.stroke();
+
+    // Darvozalar
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 200, 10, 200); // Chap darvoza
+    ctx.fillRect(990, 200, 10, 200); // O'ng darvoza
+}
+
+function update() {
+    // Player 1 harakati (W, A, S, D)
+    if (keys['KeyW']) p1.y -= p1.speed;
+    if (keys['KeyS']) p1.y += p1.speed;
+    if (keys['KeyA']) p1.x -= p1.speed;
+    if (keys['KeyD']) p1.x += p1.speed;
+
+    // Player 2 harakati (Yo'nalish tugmalari)
+    if (keys['ArrowUp']) p2.y -= p2.speed;
+    if (keys['ArrowDown']) p2.y += p2.speed;
+    if (keys['ArrowLeft']) p2.x -= p2.speed;
+    if (keys['ArrowRight']) p2.x += p2.speed;
+
+    // To'p fizikasi va ishqalanish
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+    ball.dx *= ball.friction;
+    ball.dy *= ball.friction;
+
+    // Devorlar bilan to'qnashuv (To'p)
+    if (ball.y + ball.r > 600 || ball.y - ball.r < 0) ball.dy *= -1;
+    if (ball.x + ball.r > 1000 || ball.x - ball.r < 0) {
+        // Gol tekshiruvi
+        if (ball.y > 200 && ball.y < 400) {
+            if (ball.x > 500) p1.score++; else p2.score++;
+            resetBall();
+        } else {
+            ball.dx *= -1;
+        }
+    }
+
+    // Futbolchilarning maydon chegarasidan chiqib ketmasligi
+    [p1, p2].forEach(p => {
+        p.x = Math.max(p.r, Math.min(1000 - p.r, p.x));
+        p.y = Math.max(p.r, Math.min(600 - p.r, p.y));
+    });
+
+    // To'p va futbolchi to'qnashuvi (Kick)
+    handleCollision(p1);
+    handleCollision(p2);
+
+    document.getElementById("s1").innerText = p1.score;
+    document.getElementById("s2").innerText = p2.score;
+}
+
+function handleCollision(p) {
+    let dx = ball.x - p.x;
+    let dy = ball.y - p.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < p.r + ball.r) {
+        let angle = Math.atan2(dy, dx);
+        let power = 15; // Tepish kuchi
+        ball.dx = Math.cos(angle) * power;
+        ball.dy = Math.sin(angle) * power;
+    }
+}
+
+function resetBall() {
+    ball.x = 500; ball.y = 300;
+    ball.dx = 0; ball.dy = 0;
+    p1.x = 100; p1.y = 300;
+    p2.x = 900; p2.y = 300;
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawField();
+
+    // To'pni chizish
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.closePath();
+
+    // Playerlarni chizish
+    [p1, p2].forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "white";
+        ctx.stroke();
+        ctx.closePath();
+    });
+
+    update();
+    requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
